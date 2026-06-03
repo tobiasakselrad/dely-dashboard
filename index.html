@@ -470,6 +470,119 @@
       background: var(--card);
     }
     footer strong { color: var(--dp-purple-mid); }
+
+    /* ══════════════════════════════════════════
+       OKR IMPACT CARDS
+    ══════════════════════════════════════════ */
+    .okr-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(61,0,128,.07);
+      overflow: hidden;
+    }
+    .okr-card-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .okr-kr-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .okr-kr-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .okr-weight-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .okr-weight-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .okr-weight-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--dp-purple-mid);
+    }
+    .okr-weight-pct {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--dp-purple-mid);
+      min-width: 36px;
+      text-align: right;
+    }
+    .okr-card-body { padding: 14px 20px 16px; }
+    .okr-contribution {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .okr-dely-list { display: flex; flex-direction: column; gap: 7px; }
+    .okr-dely-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .okr-dely-id {
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      color: var(--dp-purple-mid);
+      background: var(--dp-purple-lt);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .okr-dely-summary {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+    }
+    .okr-stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .okr-stat {
+      flex: 1;
+      background: var(--dp-purple-lt);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .okr-stat-val { font-size: 20px; font-weight: 900; color: var(--dp-purple); }
+    .okr-stat-lbl { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+
+    /* Observation items */
+    .obs-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .obs-item:last-child { border-bottom: none; }
+    .obs-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .obs-text { font-size: 13px; line-height: 1.5; color: var(--text); }
+    .obs-text strong { color: var(--dp-purple); }
   </style>
 </head>
 <body>
@@ -568,6 +681,23 @@
   <div class="card">
     <div class="card-title"><span class="ct-dot"></span>DELYs por Key Result</div>
     <div id="kr-bars"></div>
+  </div>
+
+  <!-- ── OKR IMPACT ───────────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">🎯</span>Impacto en OKRs H1 2026 · Squad Legales</div>
+
+  <!-- Tribe objective banner -->
+  <div style="background:linear-gradient(135deg,#1a0040,#3d0080);border-radius:14px;padding:18px 24px;margin-bottom:18px;color:#fff;">
+    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;opacity:.65;margin-bottom:6px;">Tribe Objective · Aftersale H1 2026</div>
+    <div style="font-size:14px;font-weight:600;line-height:1.5;">Construir e implementar una infraestructura apalancada en IA que reduzca costos, genere nuevas capacidades de negocio y nos libere recursos para enfocarnos en mejorar la experiencia del cliente</div>
+  </div>
+
+  <div id="okr-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-bottom:8px;"></div>
+
+  <!-- Observations card -->
+  <div class="card" style="margin-top:18px;">
+    <div class="card-title"><span class="ct-dot"></span>Observaciones y riesgos</div>
+    <div id="okr-observations"></div>
   </div>
 
   <!-- ── TABLE ──────────────────────────────────────────── -->
@@ -784,6 +914,129 @@ Object.entries(krMap)
         <div class="prog-bar-count">${count}</div>
       </div>`;
   });
+
+/* ──────────────────────────────────────────────────────
+   OKR IMPACT ANALYSIS
+────────────────────────────────────────────────────── */
+const okrs = [
+  {
+    kr: 'General KR: Security',
+    contribution: 'Migración a xGracco — asegurar que los servicios nuevos estén whitelisteados y que Goodman no tenga vulnerabilidades.',
+    weight: 60,
+    color: '#6600cc',
+    delyIds: ['DELY-4832', 'DELY-5603'],
+  },
+  {
+    kr: 'KR 1.1 · 90 AI FTEs de eficiencia',
+    contribution: '10 FTEs equivalentes de eficiencia en Legales — potenciar herramientas como Goodman, Reclame Aquí y otros.',
+    weight: 15,
+    color: '#00c853',
+    delyIds: ['DELY-5688', 'DELY-5687', 'DELY-5999', 'DELY-5947', 'DELY-5536', 'DELY-5184'],
+  },
+  {
+    kr: 'KR 1.2 · 25 AI FTEs incrementals (≥30% respuestas IA)',
+    contribution: 'Automatizar procesos administrativos y aumentar respuestas generadas por IA sobre el total.',
+    weight: 25,
+    color: '#f5a623',
+    delyIds: ['DELY-5688', 'DELY-5999', 'DELY-5027'],
+  },
+  {
+    kr: 'KR Tribu · Apagar Sugar (100% migrados)',
+    contribution: 'Reporte de auditoría por proceso para múltiples reservas — cierre del ciclo de migración.',
+    weight: null,
+    color: '#7b2fbe',
+    delyIds: ['DELY-5577', 'DELY-5442', 'DELY-5972'],
+  },
+];
+
+function statusIcon(s) {
+  if (s === 'En progreso') return '<span class="badge badge-progress" style="font-size:10px;padding:2px 7px;">⚡ En progreso</span>';
+  if (s === 'UAT')         return '<span class="badge badge-uat" style="font-size:10px;padding:2px 7px;">✅ UAT</span>';
+  if (s === 'Backlog')     return '<span class="badge badge-backlog" style="font-size:10px;padding:2px 7px;">📌 Backlog</span>';
+  return '';
+}
+
+const okrGrid = document.getElementById('okr-grid');
+okrs.forEach(okr => {
+  const relatedDelys = okr.delyIds.map(id => delys.find(d => d.id === id)).filter(Boolean);
+  const inProgress = relatedDelys.filter(d => d.status === 'En progreso').length;
+  const uat        = relatedDelys.filter(d => d.status === 'UAT').length;
+  const backlog    = relatedDelys.filter(d => d.status === 'Backlog').length;
+
+  const weightBar = okr.weight
+    ? `<div class="okr-weight-bar">
+        <div class="okr-weight-track"><div class="okr-weight-fill" style="width:${okr.weight}%;background:${okr.color}"></div></div>
+        <div class="okr-weight-pct" style="color:${okr.color}">${okr.weight}%</div>
+       </div>`
+    : `<div style="font-size:11px;color:var(--muted);font-style:italic;">Peso no definido aún</div>`;
+
+  const delyRows = relatedDelys.map(d => `
+    <div class="okr-dely-row">
+      <span class="okr-dely-id">${d.id}</span>
+      <span class="okr-dely-summary" title="${d.summary}">${d.summary}</span>
+      ${statusIcon(d.status)}
+    </div>`).join('');
+
+  okrGrid.innerHTML += `
+    <div class="okr-card">
+      <div class="okr-card-header">
+        <div class="okr-kr-label">Key Result · Squad Legales</div>
+        <div class="okr-kr-title">${okr.kr}</div>
+        ${weightBar}
+      </div>
+      <div class="okr-card-body">
+        <div class="okr-contribution">${okr.contribution}</div>
+        <div class="okr-stats">
+          <div class="okr-stat">
+            <div class="okr-stat-val" style="color:#00913c">${inProgress}</div>
+            <div class="okr-stat-lbl">En progreso</div>
+          </div>
+          <div class="okr-stat">
+            <div class="okr-stat-val" style="color:#b37200">${uat}</div>
+            <div class="okr-stat-lbl">UAT</div>
+          </div>
+          <div class="okr-stat">
+            <div class="okr-stat-val" style="color:#c0001a">${backlog}</div>
+            <div class="okr-stat-lbl">Backlog</div>
+          </div>
+        </div>
+        <div class="okr-dely-list">${delyRows}</div>
+      </div>
+    </div>`;
+});
+
+// Observations
+const observations = [
+  {
+    icon: '⚠️',
+    text: '<strong>Security KR (60% del Squad OKR):</strong> DELY-4832 (xGracco) está en progreso, pero DELY-5603 (Goodman Vulnerabilidades) sigue en Backlog. Con un peso del 60%, este KR es el de mayor impacto y tiene riesgo de demora.'
+  },
+  {
+    icon: '🟢',
+    text: '<strong>KR 1.1 AI FTEs eficiencia (15%):</strong> Buena cobertura — 4 DELYs en progreso o UAT apuntando a este KR. DELY-5688 y DELY-5687 (IA en Reclame Aquí) son los de mayor impacto directo.'
+  },
+  {
+    icon: '🟡',
+    text: '<strong>KR 1.2 AI FTEs incrementals (25%):</strong> Solo DELY-5999 está directamente alineado y está en Backlog. El KR requiere ≥30% respuestas generadas por IA — necesita priorización.'
+  },
+  {
+    icon: '📌',
+    text: '<strong>Apagar Sugar:</strong> DELY-5577 (Reporte de auditoría) en Backlog es el único DELY que cierra este KR. Sin él no se puede dar por completa la migración.'
+  },
+  {
+    icon: '💡',
+    text: '<strong>Sin KR asignado:</strong> DELY-5027 (Reclame Aquí Iteración 3, en UAT) y DELY-4832 no tienen Key Result asignado en el Sheet, aunque impactan indirectamente en Security y reducción de costos.'
+  },
+];
+
+const obsEl = document.getElementById('okr-observations');
+observations.forEach(o => {
+  obsEl.innerHTML += `
+    <div class="obs-item">
+      <div class="obs-icon">${o.icon}</div>
+      <div class="obs-text">${o.text}</div>
+    </div>`;
+});
 
 /* ──────────────────────────────────────────────────────
    TABLE
