@@ -304,6 +304,52 @@
     }
     .closed-date.none { color: var(--muted); }
 
+    .effort-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f0ebf7;
+    }
+    .effort-row:last-child { border-bottom: none; }
+    .effort-id {
+      flex: 0 0 92px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6600cc;
+      font-variant-numeric: tabular-nums;
+    }
+    .effort-track {
+      flex: 1 1 auto;
+      display: flex;
+      height: 22px;
+      border-radius: 6px;
+      overflow: hidden;
+      min-width: 40px;
+      background: #f0ebf7;
+    }
+    .effort-track.empty { background: transparent; align-items: center; }
+    .effort-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+    }
+    .effort-seg.done   { background: #00913c; }
+    .effort-seg.dev    { background: #e0a000; }
+    .effort-seg.cancel { background: #9e9e9e; }
+    .effort-none { font-size: 11px; color: var(--muted); font-style: italic; }
+    .effort-meta {
+      flex: 0 0 180px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* ══════════════════════════════════════════
        TABLE
     ══════════════════════════════════════════ */
@@ -721,6 +767,38 @@
     <div id="okr-observations"></div>
   </div>
 
+  <!-- ── IT EFFORT ─────────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">🛠️</span>Esfuerzo de IT por DELY (historias LEG)</div>
+  <div class="kpi-grid" style="margin-bottom:18px;">
+    <div class="kpi-card">
+      <div class="kpi-label">Total historias LEG</div>
+      <div class="kpi-value" id="leg-total">–</div>
+      <div class="kpi-sub">Tickets de IT vinculados</div>
+    </div>
+    <div class="kpi-card k-green">
+      <div class="kpi-label">En producción</div>
+      <div class="kpi-value" id="leg-done">–</div>
+      <div class="kpi-sub">Historias deployadas</div>
+    </div>
+    <div class="kpi-card k-amber">
+      <div class="kpi-label">En desarrollo</div>
+      <div class="kpi-value" id="leg-dev">–</div>
+      <div class="kpi-sub">En curso</div>
+    </div>
+    <div class="kpi-card k-purple">
+      <div class="kpi-label">% completado</div>
+      <div class="kpi-value" id="leg-pct">–</div>
+      <div class="kpi-sub">LEGs en prod / total</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:8px;">
+    <div class="card-title"><span class="ct-dot"></span>Carga de IT y avance por DELY</div>
+    <div style="font-size:11px;color:var(--muted);margin:-4px 0 14px;">
+      El tamaño de la barra representa la <strong>cantidad de historias LEG</strong> (proxy de esfuerzo). El color indica avance: verde = en producción, ámbar = en desarrollo, gris = cancelado. No hay story points ni horas cargadas en Jira; "ventana IT" es desde la 1ra historia hasta hoy.
+    </div>
+    <div id="effort-list"></div>
+  </div>
+
   <!-- ── TABLE ──────────────────────────────────────────── -->
   <div class="section-title"><span class="s-icon">📋</span>Detalle de DELYs</div>
   <div class="card" style="padding: 20px 20px 16px;">
@@ -762,40 +840,52 @@
 const delys = [
   { id:'DELY-5947', summary:'Desarrollo front + back AGATA',
     status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
-    krId:'SOMA-4813', krFull:'Legal' },
+    krId:'SOMA-4813', krFull:'Legal',
+    legs:{ total:2, done:1, dev:1, cancel:0, first:'2026-06-02' } },
   { id:'DELY-5688', summary:'Reclame aquí | Funcionalidad para regenerar informe de IA desde Goodman',
     status:'Listo', closed:'2026-06-02', objId:'SOMA-4522', objFull:'IA - Reducir costos',
-    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)' },
+    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)',
+    legs:{ total:4, done:3, dev:0, cancel:1, first:'2026-05-22' } },
   { id:'DELY-5687', summary:'Agregar botón de recalculo IA en Reclame Aqui',
     status:'Canceled', closed:'2026-06-02', objId:'SOMA-4820', objFull:'Legal',
-    krId:'SOMA-4813', krFull:'Legal' },
+    krId:'SOMA-4813', krFull:'Legal',
+    legs:{ total:1, done:1, dev:0, cancel:0, first:'2026-05-22' } },
   { id:'DELY-5603', summary:'Goodman | Vulnerabilidades',
     status:'UAT', objId:'SOMA-4818', objFull:'Security',
-    krId:'SOMA-4819', krFull:'Security' },
+    krId:'SOMA-4819', krFull:'Security',
+    legs:{ total:1, done:1, dev:0, cancel:0, first:'2026-05-20' } },
   { id:'DELY-5577', summary:'Reporte de auditoría por proceso, para múltiples reservas',
     status:'En progreso', objId:'N/A', objFull:null,
-    krId:'SOMA-963', krFull:'KR2.1.- Apagar Sugar; 100% migrados' },
+    krId:'SOMA-963', krFull:'KR2.1.- Apagar Sugar; 100% migrados',
+    legs:{ total:2, done:0, dev:2, cancel:0, first:'2026-05-19' } },
   { id:'DELY-5536', summary:'Saul: Agregar validaciones a proceso validador de DJE',
     status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
-    krId:'SOMA-4813', krFull:'Legal' },
+    krId:'SOMA-4813', krFull:'Legal',
+    legs:{ total:4, done:4, dev:0, cancel:0, first:'2026-05-15' } },
   { id:'DELY-5442', summary:'Tipificaciones',
     status:'En progreso', objId:'SOMA-1864', objFull:'Tech Improvement',
-    krId:'SOMA-4651', krFull:'Tech Improvement' },
+    krId:'SOMA-4651', krFull:'Tech Improvement',
+    legs:{ total:3, done:3, dev:0, cancel:0, first:'2026-05-12' } },
   { id:'DELY-5184', summary:'Goodman - Ajustes',
     status:'UAT', objId:'N/A', objFull:null,
-    krId:'SOMA-4648', krFull:'Legal' },
+    krId:'SOMA-4648', krFull:'Legal',
+    legs:{ total:4, done:4, dev:0, cancel:0, first:'2026-03-11' } },
   { id:'DELY-5027', summary:'Reclame Aquí - Iteración 3',
     status:'UAT', objId:'SOMA-816', objFull:'1.- Reducir costos de legales',
-    krId:'N/A', krFull:null },
+    krId:'N/A', krFull:null,
+    legs:{ total:11, done:11, dev:0, cancel:0, first:'2026-04-28' } },
   { id:'DELY-4832', summary:'Saul - Integración con servicios de xGracco',
     status:'En progreso', objId:'SOMA-817', objFull:'2.- Reemplazar Sugar',
-    krId:'N/A', krFull:null },
+    krId:'N/A', krFull:null,
+    legs:{ total:5, done:5, dev:0, cancel:0, first:'2026-04-13' } },
   { id:'DELY-5972', summary:'Goodman | Historias técnicas 3.0',
     status:'Backlog', objId:'SOMA-1864', objFull:'Tech Improvement',
-    krId:'SOMA-4651', krFull:'Tech Improvement' },
+    krId:'SOMA-4651', krFull:'Tech Improvement',
+    legs:{ total:0, done:0, dev:0, cancel:0, first:null } },
   { id:'DELY-5999', summary:'Goodman - Consumidor.gov V1',
     status:'Backlog', objId:'SOMA-4522', objFull:'IA - Reducir costos',
-    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)' },
+    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)',
+    legs:{ total:0, done:0, dev:0, cancel:0, first:null } },
 ];
 
 const STATUS_COLOR = {
@@ -1070,6 +1160,54 @@ observations.forEach(o => {
       <div class="obs-text">${o.text}</div>
     </div>`;
 });
+
+/* ──────────────────────────────────────────────────────
+   IT EFFORT (LEGs)
+────────────────────────────────────────────────────── */
+const legTotal = delys.reduce((a, d) => a + d.legs.total, 0);
+const legDone  = delys.reduce((a, d) => a + d.legs.done, 0);
+const legDev   = delys.reduce((a, d) => a + d.legs.dev, 0);
+const legCancel= delys.reduce((a, d) => a + d.legs.cancel, 0);
+document.getElementById('leg-total').textContent = legTotal;
+document.getElementById('leg-done').textContent  = legDone;
+document.getElementById('leg-dev').textContent   = legDev;
+document.getElementById('leg-pct').textContent   = legTotal ? Math.round(legDone / legTotal * 100) + '%' : '–';
+
+const DAY = 86400000;
+const today = new Date();
+const maxLegs = Math.max(...delys.map(d => d.legs.total));
+const effortEl = document.getElementById('effort-list');
+
+delys
+  .slice()
+  .sort((a, b) => b.legs.total - a.legs.total)
+  .forEach(d => {
+    const L = d.legs;
+    if (L.total === 0) {
+      effortEl.innerHTML += `
+        <div class="effort-row">
+          <div class="effort-id">${d.id}</div>
+          <div class="effort-track empty"><span class="effort-none">Sin historias de IT cargadas</span></div>
+          <div class="effort-meta">—</div>
+        </div>`;
+      return;
+    }
+    const widthPct = (L.total / maxLegs * 100).toFixed(0);
+    const seg = (n, cls) => n > 0
+      ? `<div class="effort-seg ${cls}" style="flex:${n}" title="${n} ${cls}">${n}</div>` : '';
+    const days = L.first ? Math.round((today - new Date(L.first)) / DAY) : null;
+    const pct = Math.round(L.done / L.total * 100);
+    effortEl.innerHTML += `
+      <div class="effort-row">
+        <div class="effort-id" title="${d.summary}">${d.id}</div>
+        <div class="effort-track" style="width:${widthPct}%">
+          ${seg(L.done, 'done')}${seg(L.dev, 'dev')}${seg(L.cancel, 'cancel')}
+        </div>
+        <div class="effort-meta">
+          <strong>${L.total}</strong> LEG · ${pct}% prod${days != null ? ` · 🕐 ${days}d IT` : ''}
+        </div>
+      </div>`;
+  });
 
 /* ──────────────────────────────────────────────────────
    TABLE
