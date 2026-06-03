@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard DELYs · Legal Claims (PUXIT)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      /* ── Despegar purple palette (from screenshot) ── */
+      --dp-purple-dark:   #1a0040;   /* table header / darkest */
+      --dp-purple:        #3d0080;   /* header gradient start  */
+      --dp-purple-mid:    #6600cc;   /* header gradient end    */
+      --dp-purple-sec:    #7b2fbe;   /* section rows           */
+      --dp-purple-lt:     #f0ebff;   /* light bg accents       */
+      --dp-purple-pill:   #e8d9ff;   /* pill backgrounds       */
+
+      /* ── Status colors ── */
+      --dp-green:         #00c853;
+      --dp-green-lt:      #e6f9ee;
+      --dp-amber:         #f5a623;
+      --dp-amber-lt:      #fff8e1;
+      --dp-red:           #ff1744;
+      --dp-red-lt:        #feecec;
+      --dp-grey:          #b0bec5;
+      --dp-grey-lt:       #f4f6f8;
+
+      /* ── Neutrals ── */
+      --bg:     #f0eef8;
+      --card:   #ffffff;
+      --text:   #1a0040;
+      --muted:  #7a7a9a;
+      --border: #e0d9f5;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+    header {
+      background: linear-gradient(135deg, var(--dp-purple) 0%, var(--dp-purple-mid) 100%);
+      color: #fff;
+      padding: 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(61,0,128,.40);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 18px; }
+
+    /* Despegar "stacked lines" logo icon */
+    .logo-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 28px;
+      flex-shrink: 0;
+    }
+    .logo-icon span {
+      display: block;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .logo-icon span:nth-child(1) { width: 28px; }
+    .logo-icon span:nth-child(2) { width: 20px; }
+    .logo-icon span:nth-child(3) { width: 24px; }
+
+    .logo-wordmark {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,.3);
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      opacity: .97;
+    }
+    .header-title p {
+      font-size: 12px;
+      opacity: .65;
+      font-weight: 400;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 12px;
+      opacity: .75;
+    }
+    .header-right strong { opacity: 1; font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       MAIN
+    ══════════════════════════════════════════ */
+    main { padding: 30px 36px 56px; max-width: 1420px; margin: 0 auto; }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: var(--dp-purple-mid);
+      margin-top: 36px;
+      margin-bottom: 16px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-title .s-icon {
+      font-size: 14px;
+    }
+
+    /* ══════════════════════════════════════════
+       KPI CARDS
+    ══════════════════════════════════════════ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 18px 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(61,0,128,.07);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--dp-purple-mid);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .kpi-card.k-green::before  { background: var(--dp-green); }
+    .kpi-card.k-amber::before  { background: var(--dp-amber); }
+    .kpi-card.k-red::before    { background: var(--dp-red); }
+    .kpi-card.k-purple::before { background: var(--dp-purple-sec); }
+
+    .kpi-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--dp-purple);
+      line-height: 1;
+    }
+    .kpi-card.k-green  .kpi-value { color: #00913c; }
+    .kpi-card.k-amber  .kpi-value { color: #b37200; }
+    .kpi-card.k-red    .kpi-value { color: #c0001a; }
+    .kpi-card.k-purple .kpi-value { color: var(--dp-purple-sec); }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+      font-weight: 400;
+    }
+
+    /* ══════════════════════════════════════════
+       GRID 2
+    ══════════════════════════════════════════ */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ══════════════════════════════════════════
+       CARD
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(61,0,128,.07);
+      padding: 24px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .card-title .ct-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--dp-purple-mid);
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       BADGES
+    ══════════════════════════════════════════ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 11px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .badge-progress {
+      background: var(--dp-green-lt);
+      color: #00713a;
+    }
+    .badge-progress::before { background: var(--dp-green); }
+
+    .badge-uat {
+      background: var(--dp-amber-lt);
+      color: #8a5a00;
+    }
+    .badge-uat::before { background: var(--dp-amber); }
+
+    .badge-backlog {
+      background: var(--dp-red-lt);
+      color: #a80012;
+    }
+    .badge-backlog::before { background: var(--dp-red); }
+
+    .badge-na {
+      background: var(--dp-grey-lt);
+      color: var(--muted);
+    }
+    .badge-na::before { background: var(--dp-grey); }
+
+    /* ══════════════════════════════════════════
+       TABLE
+    ══════════════════════════════════════════ */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--dp-purple-dark);
+    }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: rgba(255,255,255,.85);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    tbody tr:hover { background: var(--dp-purple-lt); }
+    tbody tr:last-child { border-bottom: none; }
+
+    td {
+      padding: 12px 16px;
+      vertical-align: middle;
+    }
+
+    .dely-id {
+      font-weight: 800;
+      color: var(--dp-purple-mid);
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      background: var(--dp-purple-lt);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .summary-cell {
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .obj-tag {
+      display: inline-block;
+      background: var(--dp-purple-lt);
+      color: var(--dp-purple);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      max-width: 210px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .obj-tag.unassigned {
+      background: var(--dp-grey-lt);
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════════════
+       PROGRESS BARS (KR)
+    ══════════════════════════════════════════ */
+    .prog-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .prog-bar-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      width: 220px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prog-bar-track {
+      flex: 1;
+      background: var(--border);
+      border-radius: 99px;
+      height: 9px;
+      overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .7s cubic-bezier(.4,0,.2,1);
+    }
+    .prog-bar-count {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--dp-purple);
+      min-width: 20px;
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════
+       LEGEND
+    ══════════════════════════════════════════ */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       FILTER BUTTONS
+    ══════════════════════════════════════════ */
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 99px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+    }
+    .filter-btn:hover {
+      border-color: var(--dp-purple-mid);
+      color: var(--dp-purple-mid);
+    }
+    .filter-btn.active {
+      background: var(--dp-purple);
+      color: #fff;
+      border-color: var(--dp-purple);
+    }
+    .filter-btn.active-green  { background: #00913c; border-color: #00913c; color: #fff; }
+    .filter-btn.active-amber  { background: #b37200; border-color: #b37200; color: #fff; }
+    .filter-btn.active-red    { background: #c0001a; border-color: #c0001a; color: #fff; }
+
+    /* ══════════════════════════════════════════
+       CHART
+    ══════════════════════════════════════════ */
+    .chart-container { position: relative; height: 230px; }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 18px 36px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+    footer strong { color: var(--dp-purple-mid); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header>
+  <div class="header-left">
+    <div class="logo-icon">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo-wordmark">DESPEGAR</div>
+    <div class="header-divider"></div>
+    <div class="header-title">
+      <h1>DELYs · Legal Claims (PUXIT) — Análisis KR</h1>
+      <p>Seguimiento de objetivos y key results del equipo</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div>Equipo: <strong>Legal Claims · PUXIT</strong></div>
+    <div id="update-date" style="margin-top:2px;"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── KPIs ─────────────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">📊</span>Resumen General</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total DELYs</div>
+      <div class="kpi-value">11</div>
+      <div class="kpi-sub">Sprint activo</div>
+    </div>
+    <div class="kpi-card k-green">
+      <div class="kpi-label">En Progreso</div>
+      <div class="kpi-value" id="cnt-progress">–</div>
+      <div class="kpi-sub">En desarrollo</div>
+    </div>
+    <div class="kpi-card k-amber">
+      <div class="kpi-label">UAT</div>
+      <div class="kpi-value" id="cnt-uat">–</div>
+      <div class="kpi-sub">En testing</div>
+    </div>
+    <div class="kpi-card k-red">
+      <div class="kpi-label">Backlog</div>
+      <div class="kpi-value" id="cnt-backlog">–</div>
+      <div class="kpi-sub">Sin iniciar</div>
+    </div>
+    <div class="kpi-card k-purple">
+      <div class="kpi-label">Con Squad Obj.</div>
+      <div class="kpi-value">9</div>
+      <div class="kpi-sub">2 sin asignar</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Con Key Result</div>
+      <div class="kpi-value">9</div>
+      <div class="kpi-sub">2 sin asignar</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Obj. únicos</div>
+      <div class="kpi-value">6</div>
+      <div class="kpi-sub">Squad objectives</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">KRs únicos</div>
+      <div class="kpi-value">6</div>
+      <div class="kpi-sub">Key results</div>
+    </div>
+  </div>
+
+  <!-- ── CHARTS ────────────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">📈</span>Distribución</div>
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="card-title"><span class="ct-dot"></span>Estado de DELYs</div>
+      <div class="chart-container">
+        <canvas id="chartStatus"></canvas>
+      </div>
+      <div class="legend" id="legend-status"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="ct-dot"></span>DELYs por Squad Objective</div>
+      <div class="chart-container">
+        <canvas id="chartObjective"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── KR BREAKDOWN ─────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">🎯</span>Key Results</div>
+  <div class="card">
+    <div class="card-title"><span class="ct-dot"></span>DELYs por Key Result</div>
+    <div id="kr-bars"></div>
+  </div>
+
+  <!-- ── TABLE ──────────────────────────────────────────── -->
+  <div class="section-title"><span class="s-icon">📋</span>Detalle de DELYs</div>
+  <div class="card" style="padding: 20px 20px 16px;">
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all" onclick="filterTable(this, '')">Todos (11)</button>
+      <button class="filter-btn" data-filter="En progreso" data-cls="active-green" onclick="filterTable(this, 'active-green')">⚡ En progreso</button>
+      <button class="filter-btn" data-filter="UAT" data-cls="active-amber" onclick="filterTable(this, 'active-amber')">✅ UAT</button>
+      <button class="filter-btn" data-filter="Backlog" data-cls="active-red" onclick="filterTable(this, 'active-red')">📌 Backlog</button>
+    </div>
+    <div class="table-wrap">
+      <table id="dely-table">
+        <thead>
+          <tr>
+            <th>DELY</th>
+            <th>Summary</th>
+            <th>Estado</th>
+            <th>Squad Objective</th>
+            <th>Key Result</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Dashboard · <strong>Legal Claims (PUXIT)</strong> · Despegar &nbsp;|&nbsp; <span id="footer-date"></span>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────
+   DATA
+────────────────────────────────────────────────────── */
+const delys = [
+  { id:'DELY-5947', summary:'Desarrollo front + back AGATA',
+    status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
+    krId:'SOMA-4813', krFull:'Legal' },
+  { id:'DELY-5688', summary:'Reclame aquí | Funcionalidad para regenerar informe de IA desde Goodman',
+    status:'En progreso', objId:'SOMA-4522', objFull:'IA - Reducir costos',
+    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)' },
+  { id:'DELY-5687', summary:'Agregar botón de recalculo IA en Reclame Aqui',
+    status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
+    krId:'SOMA-4813', krFull:'Legal' },
+  { id:'DELY-5603', summary:'Goodman | Vulnerabilidades',
+    status:'Backlog', objId:'SOMA-4818', objFull:'Security',
+    krId:'SOMA-4819', krFull:'Security' },
+  { id:'DELY-5577', summary:'Reporte de auditoría por proceso, para múltiples reservas',
+    status:'Backlog', objId:'N/A', objFull:null,
+    krId:'SOMA-963', krFull:'KR2.1.- Apagar Sugar; 100% migrados' },
+  { id:'DELY-5536', summary:'Saul: Agregar validaciones a proceso validador de DJE',
+    status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
+    krId:'SOMA-4813', krFull:'Legal' },
+  { id:'DELY-5442', summary:'Tipificaciones',
+    status:'En progreso', objId:'SOMA-1864', objFull:'Tech Improvement',
+    krId:'SOMA-4651', krFull:'Tech Improvement' },
+  { id:'DELY-5184', summary:'Goodman - Ajustes',
+    status:'UAT', objId:'N/A', objFull:null,
+    krId:'SOMA-4648', krFull:'Legal' },
+  { id:'DELY-5027', summary:'Reclame Aquí - Iteración 3',
+    status:'UAT', objId:'SOMA-816', objFull:'1.- Reducir costos de legales',
+    krId:'N/A', krFull:null },
+  { id:'DELY-4832', summary:'Saul - Integración con servicios de xGracco',
+    status:'En progreso', objId:'SOMA-817', objFull:'2.- Reemplazar Sugar',
+    krId:'N/A', krFull:null },
+  { id:'DELY-5972', summary:'Tech task (sin summary)',
+    status:'En progreso', objId:'SOMA-1864', objFull:'Tech Improvement',
+    krId:'SOMA-4651', krFull:'Tech Improvement' },
+];
+
+const STATUS_COLOR = {
+  'En progreso': '#00c853',
+  'UAT':         '#f5a623',
+  'Backlog':     '#ff1744',
+};
+
+const OBJ_COLORS = [
+  '#6600cc','#3d0080','#00c853','#f5a623','#7b2fbe','#00bcd4','#ff6d00',
+];
+
+/* ──────────────────────────────────────────────────────
+   DATE
+────────────────────────────────────────────────────── */
+const now = new Date();
+const fmt = now.toLocaleDateString('es-AR', { day:'2-digit', month:'long', year:'numeric' });
+document.getElementById('update-date').textContent = 'Actualizado: ' + fmt;
+document.getElementById('footer-date').textContent = fmt;
+
+/* ──────────────────────────────────────────────────────
+   KPI COUNTERS
+────────────────────────────────────────────────────── */
+const counts = {};
+delys.forEach(d => { counts[d.status] = (counts[d.status] || 0) + 1; });
+document.getElementById('cnt-progress').textContent = counts['En progreso'] || 0;
+document.getElementById('cnt-uat').textContent      = counts['UAT']         || 0;
+document.getElementById('cnt-backlog').textContent  = counts['Backlog']     || 0;
+
+/* ──────────────────────────────────────────────────────
+   CHART: STATUS DOUGHNUT
+────────────────────────────────────────────────────── */
+new Chart(document.getElementById('chartStatus'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(counts),
+    datasets: [{
+      data: Object.values(counts),
+      backgroundColor: Object.keys(counts).map(k => STATUS_COLOR[k] || '#ccc'),
+      borderWidth: 3,
+      borderColor: '#fff',
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw} DELY${ctx.raw > 1 ? 's' : ''}`
+        }
+      }
+    }
+  }
+});
+
+// Legend
+const legendEl = document.getElementById('legend-status');
+Object.entries(counts).forEach(([label, val]) => {
+  legendEl.innerHTML += `
+    <div class="legend-item">
+      <span class="legend-dot" style="background:${STATUS_COLOR[label]}"></span>
+      ${label} (${val})
+    </div>`;
+});
+
+/* ──────────────────────────────────────────────────────
+   CHART: OBJECTIVE BARS
+────────────────────────────────────────────────────── */
+const objMap = {};
+delys.forEach(d => {
+  const key = d.objFull || 'Sin asignar';
+  objMap[key] = (objMap[key] || 0) + 1;
+});
+
+new Chart(document.getElementById('chartObjective'), {
+  type: 'bar',
+  data: {
+    labels: Object.keys(objMap),
+    datasets: [{
+      label: 'DELYs',
+      data: Object.values(objMap),
+      backgroundColor: Object.keys(objMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length] + 'bb'),
+      borderColor:     Object.keys(objMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length]),
+      borderWidth: 1.5,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: { stepSize: 1, font: { size: 11, family: 'Inter' }, color: '#7a7a9a' },
+        grid: { color: '#e8d9ff' }
+      },
+      y: {
+        ticks: {
+          font: { size: 11, family: 'Inter' },
+          color: '#1a0040',
+          callback: function(val) {
+            const lbl = this.getLabelForValue(val);
+            return lbl.length > 26 ? lbl.slice(0, 26) + '…' : lbl;
+          }
+        },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+/* ──────────────────────────────────────────────────────
+   KR PROGRESS BARS
+────────────────────────────────────────────────────── */
+const krMap = {};
+delys.forEach(d => {
+  const key = d.krFull || 'Sin asignar';
+  krMap[key] = (krMap[key] || 0) + 1;
+});
+
+const maxKR = Math.max(...Object.values(krMap));
+const barsEl = document.getElementById('kr-bars');
+Object.entries(krMap)
+  .sort((a, b) => b[1] - a[1])
+  .forEach(([label, count], i) => {
+    const pct = (count / maxKR * 100).toFixed(0);
+    const color = OBJ_COLORS[i % OBJ_COLORS.length];
+    barsEl.innerHTML += `
+      <div class="prog-bar-wrap">
+        <div class="prog-bar-label" title="${label}">${label}</div>
+        <div class="prog-bar-track">
+          <div class="prog-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <div class="prog-bar-count">${count}</div>
+      </div>`;
+  });
+
+/* ──────────────────────────────────────────────────────
+   TABLE
+────────────────────────────────────────────────────── */
+function badgeClass(s) {
+  if (s === 'En progreso') return 'badge-progress';
+  if (s === 'UAT')         return 'badge-uat';
+  if (s === 'Backlog')     return 'badge-backlog';
+  return 'badge-na';
+}
+
+function renderTable(data) {
+  const tbody = document.querySelector('#dely-table tbody');
+  tbody.innerHTML = '';
+  data.forEach(d => {
+    const objLabel = d.objFull
+      ? `<span class="obj-tag" title="${d.objFull} (${d.objId})">${d.objFull}</span>`
+      : `<span class="obj-tag unassigned">Sin asignar</span>`;
+    const krLabel = d.krFull
+      ? `<span class="obj-tag" title="${d.krFull} (${d.krId})">${d.krFull}</span>`
+      : `<span class="obj-tag unassigned">Sin asignar</span>`;
+    tbody.innerHTML += `
+      <tr data-status="${d.status}">
+        <td><span class="dely-id">${d.id}</span></td>
+        <td><div class="summary-cell" title="${d.summary}">${d.summary}</div></td>
+        <td><span class="badge ${badgeClass(d.status)}">${d.status}</span></td>
+        <td>${objLabel}</td>
+        <td>${krLabel}</td>
+      </tr>`;
+  });
+}
+renderTable(delys);
+
+function filterTable(btn, cls) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active','active-green','active-amber','active-red');
+  });
+  btn.classList.add('active');
+  if (cls) btn.classList.add(cls);
+  const f = btn.dataset.filter;
+  renderTable(f === 'all' ? delys : delys.filter(d => d.status === f));
+}
+</script>
+</body>
+</html>
