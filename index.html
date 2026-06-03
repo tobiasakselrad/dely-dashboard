@@ -502,7 +502,7 @@
   <div class="kpi-grid">
     <div class="kpi-card">
       <div class="kpi-label">Total DELYs</div>
-      <div class="kpi-value">11</div>
+      <div class="kpi-value">12</div>
       <div class="kpi-sub">Sprint activo</div>
     </div>
     <div class="kpi-card k-green">
@@ -574,7 +574,7 @@
   <div class="section-title"><span class="s-icon">📋</span>Detalle de DELYs</div>
   <div class="card" style="padding: 20px 20px 16px;">
     <div class="filters">
-      <button class="filter-btn active" data-filter="all" onclick="filterTable(this, '')">Todos (11)</button>
+      <button class="filter-btn active" data-filter="all" onclick="filterTable(this, '')">Todos (12)</button>
       <button class="filter-btn" data-filter="En progreso" data-cls="active-green" onclick="filterTable(this, 'active-green')">⚡ En progreso</button>
       <button class="filter-btn" data-filter="UAT" data-cls="active-amber" onclick="filterTable(this, 'active-amber')">✅ UAT</button>
       <button class="filter-btn" data-filter="Backlog" data-cls="active-red" onclick="filterTable(this, 'active-red')">📌 Backlog</button>
@@ -639,6 +639,9 @@ const delys = [
   { id:'DELY-5972', summary:'Tech task (sin summary)',
     status:'En progreso', objId:'SOMA-1864', objFull:'Tech Improvement',
     krId:'SOMA-4651', krFull:'Tech Improvement' },
+  { id:'DELY-5999', summary:'Goodman - Consumidor.gov V1',
+    status:'Backlog', objId:'SOMA-4522', objFull:'IA - Reducir costos',
+    krId:'SOMA-4524', krFull:'AI FTEs eficiencia (90)' },
 ];
 
 const STATUS_COLOR = {
