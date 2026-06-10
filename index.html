@@ -816,7 +816,7 @@
   <div class="card" style="margin:18px 0 8px;">
     <div class="card-title"><span class="ct-dot"></span>Ratio de alineación — ¿la energía justifica los objetivos?</div>
     <div style="font-size:11px;color:var(--muted);margin:-4px 0 14px;">
-      Clasifica el esfuerzo IT (historias LEG) en tres categorías: <strong>Funcional</strong> = KRs que generan valor nuevo (AI FTEs); <strong>Mantenimiento</strong> = KRs cross que sostienen lo existente (Security, Tech Improvement, Legal); <strong>Sin KR</strong> = esfuerzo no trazable a ningún objetivo.
+      Clasifica el esfuerzo IT (historias LEG) en tres categorías: <strong>Funcional</strong> = KRs que generan valor nuevo (AI FTEs); <strong>Security</strong> = KR general de compañía, obligatorio e independiente del roadmap funcional; <strong>Mantenimiento</strong> = Tech Improvement, Legal, Sugar.
     </div>
     <div id="alignment-bar" style="margin-bottom:14px;"></div>
     <div id="alignment-legend" style="display:flex;gap:20px;flex-wrap:wrap;font-size:12px;margin-bottom:6px;"></div>
@@ -861,43 +861,6 @@
   </div>
 
 </main>
-
-<!-- ── GUÍA PARA EL EQUIPO IT ─────────────────────────── -->
-<div class="section-title" style="margin-top:32px;"><span class="s-icon">📖</span>Guía: cómo medir bien el esfuerzo de IT</div>
-<div class="card" style="padding:22px 24px 20px;line-height:1.75;font-size:13px;">
-  <p style="margin:0 0 14px;">Esta guía resume los acuerdos mínimos para que la medición de esfuerzo IT tenga sentido y sea comparable entre sprints.</p>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">1 · Regla de oro: cada historia LEG debe estar linkeada a un DELY</div>
-  <p style="margin:0 0 14px;">Sin ese link, la historia no aparece en el dashboard y el esfuerzo queda invisible. Si una historia no tiene DELY al que linkear, preguntar al PO antes de arrancar.</p>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">2 · Cada DELY debe tener KR asignado</div>
-  <p style="margin:0 0 6px;">El KR define si el trabajo genera valor nuevo o mantiene lo existente. Sin KR, el esfuerzo cae en la zona roja del ratio de alineación.</p>
-  <ul style="margin:0 0 14px;padding-left:20px;">
-    <li><strong>KR funcional</strong> (ej. AI FTEs): el desarrollo crea o mejora una funcionalidad que aporta valor nuevo. Es capitalizable.</li>
-    <li><strong>KR cross / mantenimiento</strong> (Security, Tech Improvement, Legal): el desarrollo sostiene lo existente. Es necesario pero no capitalizable.</li>
-  </ul>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">3 · Una historia = una unidad de esfuerzo (por ahora)</div>
-  <p style="margin:0 0 14px;">Hoy medimos por conteo de historias, no por story points. Eso es suficiente para ver tendencias. Si en el futuro queremos más precisión, podemos sumar story points — pero requiere que el equipo los cargue consistentemente en Jira.</p>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">4 · No fraccionar artificialmente</div>
-  <p style="margin:0 0 14px;">Si una tarea pequeña puede resolverse en una historia, no dividirla en tres para "mostrar más progreso". El ratio de alineación se distorsiona si hay inflación de historias en KRs de mantenimiento.</p>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">5 · Objetivo de referencia para el ratio</div>
-  <p style="margin:0 0 6px;">No hay un número universal, pero como punto de partida para discutir en el equipo:</p>
-  <ul style="margin:0 0 14px;padding-left:20px;">
-    <li><span style="color:#00c853;font-weight:700;">≥ 50% funcional</span> → el equipo está avanzando hacia objetivos de negocio.</li>
-    <li><span style="color:#f5a623;font-weight:700;">30–50% funcional</span> → balance razonable si hay deuda técnica o security activos.</li>
-    <li><span style="color:#ff1744;font-weight:700;">&lt; 30% funcional</span> → señal de alerta: revisar si el roadmap refleja las prioridades reales.</li>
-  </ul>
-
-  <div style="font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--dp-purple);margin-bottom:8px;">6 · Cadencia de revisión sugerida</div>
-  <ul style="margin:0 0 0;padding-left:20px;">
-    <li><strong>Sprint review:</strong> revisar si los DELYs nuevos tienen KR asignado antes de arrancar.</li>
-    <li><strong>Mensual:</strong> revisar el ratio de alineación y discutir si el balance es intencional.</li>
-    <li><strong>Fin de H1:</strong> comparar el ratio final con el planeado — ¿pusimos la energía donde dijimos?</li>
-  </ul>
-</div>
 
 <footer>
   Dashboard · <strong>Legal Claims (PUXIT)</strong> · Despegar &nbsp;|&nbsp; <span id="footer-date"></span>
@@ -1295,11 +1258,12 @@ delys
 /* ──────────────────────────────────────────────────────
    ALIGNMENT RATIO
 ────────────────────────────────────────────────────── */
-const FUNCTIONAL_KRS  = ['SOMA-4524','SOMA-4525']; // AI FTEs eficiencia e incrementals
-const MAINTENANCE_KRS = ['SOMA-4819','SOMA-4818','SOMA-4817','SOMA-4816','SOMA-4813','SOMA-4820','SOMA-4648','SOMA-4651','SOMA-1864','SOMA-963']; // Security, Tech Improvement, Legal, Sugar
+const FUNCTIONAL_KRS = ['SOMA-4524','SOMA-4525']; // AI FTEs eficiencia e incrementals
+const SECURITY_KRS   = ['SOMA-4819','SOMA-4818']; // Security (KR general de compañía)
+// resto = mantenimiento interno: Tech Improvement, Legal, Sugar
 
-let alignFunc = 0, alignMaint = 0, alignNone = 0;
-const alignFuncDelys = [], alignMaintDelys = [], alignNoneDelys = [];
+let alignFunc = 0, alignSec = 0, alignMaint = 0, alignNone = 0;
+const alignFuncDelys = [], alignSecDelys = [], alignMaintDelys = [], alignNoneDelys = [];
 
 delys.forEach(d => {
   const legs = d.legs.total;
@@ -1308,35 +1272,40 @@ delys.forEach(d => {
     alignNone += legs; alignNoneDelys.push(d.id);
   } else if (FUNCTIONAL_KRS.includes(d.krId)) {
     alignFunc += legs; alignFuncDelys.push(d.id);
+  } else if (SECURITY_KRS.includes(d.krId)) {
+    alignSec += legs; alignSecDelys.push(d.id);
   } else {
     alignMaint += legs; alignMaintDelys.push(d.id);
   }
 });
 
-const alignTotal = alignFunc + alignMaint + alignNone;
+const alignTotal = alignFunc + alignSec + alignMaint + alignNone;
 const pFunc  = alignTotal ? Math.round(alignFunc  / alignTotal * 100) : 0;
+const pSec   = alignTotal ? Math.round(alignSec   / alignTotal * 100) : 0;
 const pMaint = alignTotal ? Math.round(alignMaint / alignTotal * 100) : 0;
 const pNone  = alignTotal ? Math.round(alignNone  / alignTotal * 100) : 0;
 
-const alignColors = { func: '#00c853', maint: '#6600cc', none: '#ff1744' };
+const alignColors = { func: '#00c853', sec: '#e53935', maint: '#6600cc', none: '#bdbdbd' };
 
 document.getElementById('alignment-bar').innerHTML = `
   <div style="display:flex;height:32px;border-radius:8px;overflow:hidden;gap:2px;">
     ${alignFunc  > 0 ? `<div style="flex:${alignFunc};background:${alignColors.func};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;" title="${alignFuncDelys.join(', ')}">${pFunc}%</div>` : ''}
+    ${alignSec   > 0 ? `<div style="flex:${alignSec};background:${alignColors.sec};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;" title="${alignSecDelys.join(', ')}">${pSec}%</div>` : ''}
     ${alignMaint > 0 ? `<div style="flex:${alignMaint};background:${alignColors.maint};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;" title="${alignMaintDelys.join(', ')}">${pMaint}%</div>` : ''}
-    ${alignNone  > 0 ? `<div style="flex:${alignNone};background:${alignColors.none};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;" title="${alignNoneDelys.join(', ')}">${pNone}%</div>` : ''}
+    ${alignNone  > 0 ? `<div style="flex:${alignNone};background:${alignColors.none};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#333;" title="${alignNoneDelys.join(', ')}">${pNone}%</div>` : ''}
   </div>`;
 
 document.getElementById('alignment-legend').innerHTML = `
-  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${alignColors.func};margin-right:4px;"></span><strong>Funcional (valor nuevo)</strong> — ${alignFunc} LEGs · ${pFunc}%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${alignColors.func};margin-right:4px;"></span><strong>Funcional</strong> — ${alignFunc} LEGs · ${pFunc}%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${alignColors.sec};margin-right:4px;"></span><strong>Security (KR general)</strong> — ${alignSec} LEGs · ${pSec}%</span>
   <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${alignColors.maint};margin-right:4px;"></span><strong>Mantenimiento</strong> — ${alignMaint} LEGs · ${pMaint}%</span>
   ${alignNone > 0 ? `<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${alignColors.none};margin-right:4px;"></span><strong>Sin KR</strong> — ${alignNone} LEGs · ${pNone}%</span>` : ''}`;
 
 const insightMsg = pFunc >= 50
-  ? `✅ <strong>Más de la mitad del esfuerzo IT está en KRs funcionales</strong> (${pFunc}%). El equipo está invirtiendo energía donde genera valor nuevo.`
+  ? `✅ <strong>Más de la mitad del esfuerzo IT está en KRs funcionales</strong> (${pFunc}%). El equipo está invirtiendo energía donde genera valor nuevo. Security ocupa el ${pSec}% como obligación general de compañía.`
   : pFunc >= 30
-  ? `⚠️ <strong>Solo el ${pFunc}% del esfuerzo IT va a KRs funcionales.</strong> El ${pMaint}% está en mantenimiento. Vale la pena revisar si ese balance es intencional o refleja deuda acumulada.`
-  : `🔴 <strong>Menos del 30% del esfuerzo IT apunta a KRs funcionales (${pFunc}%).</strong> La mayor parte del equipo está sosteniendo lo existente. Hay que discutir si esto está alineado con los objetivos del H1.`;
+  ? `⚠️ <strong>${pFunc}% del esfuerzo IT va a KRs funcionales.</strong> Security ocupa el ${pSec}% (KR general) y mantenimiento el ${pMaint}%. Vale revisar si el balance es intencional.`
+  : `🔴 <strong>Menos del 30% del esfuerzo IT apunta a KRs funcionales (${pFunc}%).</strong> Security (${pSec}%) + mantenimiento (${pMaint}%) concentran la mayor parte. Revisar si el roadmap refleja las prioridades reales del H1.`;
 
 document.getElementById('alignment-insight').innerHTML = insightMsg;
 
