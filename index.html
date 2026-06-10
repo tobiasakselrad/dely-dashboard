@@ -135,12 +135,30 @@
       color: var(--dp-purple-mid);
       margin-top: 36px;
       margin-bottom: 16px;
+      cursor: pointer;
+      user-select: none;
     }
     .section-title::after {
       content: '';
       flex: 1;
       height: 1px;
       background: var(--border);
+    }
+    .section-title .s-toggle {
+      font-size: 11px;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      color: var(--dp-purple-mid);
+    }
+    .section-title.collapsed .s-toggle {
+      transform: rotate(-90deg);
+    }
+    .section-body {
+      overflow: hidden;
+      transition: opacity 0.2s ease;
+    }
+    .section-body.collapsed {
+      display: none;
     }
     .section-title .s-icon {
       font-size: 14px;
@@ -689,7 +707,8 @@
 <main>
 
   <!-- ── KPIs ─────────────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">📊</span>Resumen General</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">📊</span>Resumen General</div>
+  <div class="section-body">
   <div class="kpi-grid">
     <div class="kpi-card">
       <div class="kpi-label">Total DELYs</div>
@@ -722,19 +741,16 @@
       <div class="kpi-sub">1 sin asignar</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Obj. únicos</div>
-      <div class="kpi-value">6</div>
-      <div class="kpi-sub">Squad objectives</div>
-    </div>
-    <div class="kpi-card">
       <div class="kpi-label">KRs únicos</div>
       <div class="kpi-value">7</div>
       <div class="kpi-sub">Key results</div>
     </div>
   </div>
+  </div><!-- /section-body resumen -->
 
   <!-- ── CHARTS ────────────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">📈</span>Distribución</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">📈</span>Distribución</div>
+  <div class="section-body">
   <div class="grid-2">
 
     <div class="card">
@@ -753,16 +769,20 @@
     </div>
 
   </div>
+  </div><!-- /section-body distribucion -->
 
   <!-- ── KR BREAKDOWN ─────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">🎯</span>Key Results</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">🎯</span>Key Results</div>
+  <div class="section-body">
   <div class="card">
     <div class="card-title"><span class="ct-dot"></span>DELYs por Key Result</div>
     <div id="kr-bars"></div>
   </div>
+  </div><!-- /section-body key results -->
 
   <!-- ── OKR IMPACT ───────────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">🎯</span>Impacto en OKRs H1 2026 · Squad Legales</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">🎯</span>Impacto en OKRs H1 2026 · Squad Legales</div>
+  <div class="section-body">
 
   <!-- Tribe objective banner -->
   <div style="background:linear-gradient(135deg,#1a0040,#3d0080);border-radius:14px;padding:18px 24px;margin-bottom:18px;color:#fff;">
@@ -778,8 +798,11 @@
     <div id="okr-observations"></div>
   </div>
 
+  </div><!-- /section-body okr impact -->
+
   <!-- ── IT EFFORT ─────────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">🛠️</span>Esfuerzo de IT por DELY (historias LEG)</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">🛠️</span>Esfuerzo de IT por DELY (historias LEG)</div>
+  <div class="section-body">
   <div class="kpi-grid" style="margin-bottom:18px;">
     <div class="kpi-card">
       <div class="kpi-label">Total historias LEG</div>
@@ -832,8 +855,11 @@
     <div id="effort-kr"></div>
   </div>
 
+  </div><!-- /section-body esfuerzo IT -->
+
   <!-- ── TABLE ──────────────────────────────────────────── -->
-  <div class="section-title"><span class="s-icon">📋</span>Detalle de DELYs</div>
+  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">📋</span>Detalle de DELYs</div>
+  <div class="section-body">
   <div class="card" style="padding: 20px 20px 16px;">
     <div class="filters">
       <button class="filter-btn active" data-filter="all" onclick="filterTable(this, '')">Todos (12)</button>
@@ -859,6 +885,8 @@
       </table>
     </div>
   </div>
+
+  </div><!-- /section-body detalle -->
 
 </main>
 
@@ -1397,6 +1425,13 @@ function filterTable(btn, cls) {
   if (cls) btn.classList.add(cls);
   const f = btn.dataset.filter;
   renderTable(f === 'all' ? delys : delys.filter(d => d.status === f));
+}
+
+function toggleSection(titleEl) {
+  const body = titleEl.nextElementSibling;
+  if (!body || !body.classList.contains('section-body')) return;
+  titleEl.classList.toggle('collapsed');
+  body.classList.toggle('collapsed');
 }
 </script>
 </body>
