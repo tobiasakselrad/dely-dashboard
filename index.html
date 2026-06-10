@@ -1066,24 +1066,31 @@ const okrs = [
   },
   {
     kr: 'KR 1.1 · 90 AI FTEs de eficiencia',
-    contribution: '10 FTEs equivalentes de eficiencia en Legales — potenciar herramientas como Goodman, Reclame Aquí y otros.',
+    contribution: 'FTEs equivalentes de eficiencia en Legales — funcionalidades de IA en Reclame Aquí y AGATA.',
     weight: 15,
     color: '#00c853',
-    delyIds: ['DELY-5688', 'DELY-5687', 'DELY-5999', 'DELY-5947', 'DELY-5536', 'DELY-5184'],
+    delyIds: ['DELY-5688', 'DELY-5687', 'DELY-5947'],
   },
   {
     kr: 'KR 1.2 · 25 AI FTEs incrementals (≥30% respuestas IA)',
-    contribution: 'Automatizar procesos administrativos y aumentar respuestas generadas por IA sobre el total.',
+    contribution: 'Automatizar procesos administrativos y aumentar respuestas generadas por IA — Reclame Aquí It.3 y Consumidor.gov.',
     weight: 25,
     color: '#f5a623',
-    delyIds: ['DELY-5688', 'DELY-5999', 'DELY-5027'],
+    delyIds: ['DELY-5999', 'DELY-5027'],
   },
   {
     kr: 'KR Tribu · Apagar Sugar (100% migrados)',
     contribution: 'Reporte de auditoría por proceso para múltiples reservas — cierre del ciclo de migración.',
     weight: null,
     color: '#7b2fbe',
-    delyIds: ['DELY-5577', 'DELY-5442', 'DELY-5972'],
+    delyIds: ['DELY-5577'],
+  },
+  {
+    kr: 'Tech Improvement',
+    contribution: 'Mejoras técnicas y de calidad interna — tipificaciones, ajustes de Goodman e historias técnicas.',
+    weight: null,
+    color: '#00bcd4',
+    delyIds: ['DELY-5184', 'DELY-5442', 'DELY-5972'],
   },
 ];
 
@@ -1154,7 +1161,7 @@ okrs.forEach(okr => {
 const observations = [
   {
     icon: '🟢',
-    text: '<strong>Esfuerzo IT mejor alineado:</strong> El esfuerzo de IT sin Key Result bajó del 43% al <strong>14% (6 de 42 historias LEG)</strong> tras asignar a DELY-5027 el KR "AI FTEs incrementals". Hoy el único DELY sin KR es DELY-4832 (xGracco, 6 LEGs).'
+    text: '<strong>Todos los DELYs activos tienen KR asignado:</strong> DELY-4832 (xGracco) quedó formalizado bajo Security. El esfuerzo de IT ahora está 100% mapeado a un Key Result.'
   },
   {
     icon: '🟢',
@@ -1162,19 +1169,19 @@ const observations = [
   },
   {
     icon: '🟢',
-    text: '<strong>KR 1.1 AI FTEs eficiencia (15%):</strong> DELY-5688 (IA en Reclame Aquí) y DELY-5184 (Goodman) ya están completados. DELY-5687 fue cancelado. DELY-5947 y DELY-5536 siguen en progreso — buena cobertura.'
+    text: '<strong>KR 1.1 AI FTEs eficiencia (15%):</strong> DELY-5688 (IA en Reclame Aquí) está Listo. DELY-5687 fue cancelado. DELY-5947 (AGATA) sigue en progreso. KR cubierto con foco en automatización de IA.'
   },
   {
     icon: '🟡',
-    text: '<strong>KR 1.2 AI FTEs incrementals (25%):</strong> DELY-5027 (Reclame Aquí It.3) ya está Listo y concentra 11 LEGs de esfuerzo IT. DELY-5999 (Consumidor.gov) recién arrancó desarrollo (2 LEGs). El KR requiere ≥30% respuestas generadas por IA.'
+    text: '<strong>KR 1.2 AI FTEs incrementals (25%):</strong> DELY-5027 (Reclame Aquí It.3) ya está Listo y concentra 11 LEGs. DELY-5999 (Consumidor.gov) recién arrancó (2 LEGs en desarrollo). El KR requiere ≥30% respuestas generadas por IA.'
   },
   {
     icon: '🟡',
-    text: '<strong>Apagar Sugar:</strong> DELY-5577 (Reporte de auditoría) está en progreso con 2 LEGs aún en desarrollo (0% en producción) — es el único DELY que cierra este KR y todavía no tiene avance de IT en prod.'
+    text: '<strong>Apagar Sugar:</strong> DELY-5577 (Reporte de auditoría) es el único DELY bajo este KR y está en progreso con 2 LEGs aún en desarrollo — sin avance en prod todavía.'
   },
   {
     icon: '💡',
-    text: '<strong>Único sin KR asignado:</strong> DELY-4832 (xGracco, En progreso) no tiene Key Result en el Sheet, aunque aporta indirectamente a Security y al reemplazo de Sugar. Conviene formalizar su KR.'
+    text: '<strong>Tech Improvement ahora agrupa 3 DELYs:</strong> DELY-5184 (Goodman Ajustes, Listo), DELY-5442 (Tipificaciones, En progreso) y DELY-5972 (Historias técnicas 3.0, Backlog). Representa deuda técnica y calidad interna sin capitalizar en OKRs funcionales.'
   },
 ];
 
