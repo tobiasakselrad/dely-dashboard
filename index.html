@@ -916,8 +916,8 @@ const delys = [
     krId:'SOMA-4819', krFull:'Security',
     legs:{ total:2, done:2, dev:0, cancel:0, first:'2026-05-20' } },
   { id:'DELY-5577', summary:'Reporte de auditoría por proceso, para múltiples reservas',
-    status:'En progreso', objId:'N/A', objFull:null,
-    krId:'SOMA-963', krFull:'KR2.1.- Apagar Sugar; 100% migrados',
+    status:'En progreso', objId:'SOMA-4818', objFull:'Security',
+    krId:'SOMA-4819', krFull:'Security',
     legs:{ total:2, done:0, dev:2, cancel:0, first:'2026-05-19' } },
   { id:'DELY-5536', summary:'AGATA | Agregar validaciones a proceso validador de DJE',
     status:'En progreso', objId:'SOMA-4820', objFull:'Legal',
@@ -1101,7 +1101,7 @@ const okrs = [
     contribution: 'Migración a xGracco — asegurar que los servicios nuevos estén whitelisteados y que Goodman no tenga vulnerabilidades.',
     weight: 60,
     color: '#6600cc',
-    delyIds: ['DELY-4832', 'DELY-5603'],
+    delyIds: ['DELY-4832', 'DELY-5603', 'DELY-5577'],
   },
   {
     kr: 'KR 1.1 · 90 AI FTEs de eficiencia',
@@ -1122,7 +1122,7 @@ const okrs = [
     contribution: 'Reporte de auditoría por proceso para múltiples reservas — cierre del ciclo de migración.',
     weight: null,
     color: '#7b2fbe',
-    delyIds: ['DELY-5577'],
+    delyIds: [],
   },
   {
     kr: 'Tech Improvement',
@@ -1216,7 +1216,7 @@ const observations = [
   },
   {
     icon: '🟡',
-    text: '<strong>Apagar Sugar:</strong> DELY-5577 (Reporte de auditoría) es el único DELY bajo este KR y está en progreso con 2 LEGs aún en desarrollo — sin avance en prod todavía.'
+    text: '<strong>KR Apagar Sugar:</strong> Sin DELYs asignados actualmente — DELY-5577 fue reasignado a Security.'
   },
   {
     icon: '💡',
