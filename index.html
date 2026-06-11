@@ -762,23 +762,15 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="ct-dot"></span>DELYs por Squad Objective</div>
+      <div class="card-title"><span class="ct-dot"></span>DELYs por Key Result</div>
       <div class="chart-container">
-        <canvas id="chartObjective"></canvas>
+        <canvas id="chartKR"></canvas>
       </div>
     </div>
 
   </div>
   </div><!-- /section-body distribucion -->
 
-  <!-- ── KR BREAKDOWN ─────────────────────────────────── -->
-  <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">🎯</span>Key Results</div>
-  <div class="section-body">
-  <div class="card">
-    <div class="card-title"><span class="ct-dot"></span>DELYs por Key Result</div>
-    <div id="kr-bars"></div>
-  </div>
-  </div><!-- /section-body key results -->
 
   <!-- ── OKR IMPACT ───────────────────────────────────────── -->
   <div class="section-title" onclick="toggleSection(this)"><span class="s-toggle">▼</span><span class="s-icon">🎯</span>Impacto en OKRs H1 2026 · Squad Legales</div>
@@ -1019,23 +1011,23 @@ Object.entries(counts).forEach(([label, val]) => {
 });
 
 /* ──────────────────────────────────────────────────────
-   CHART: OBJECTIVE BARS
+   CHART: KR BAR
 ────────────────────────────────────────────────────── */
-const objMap = {};
+const krChartMap = {};
 delys.forEach(d => {
-  const key = d.objFull || 'Sin asignar';
-  objMap[key] = (objMap[key] || 0) + 1;
+  const key = d.krFull || 'Sin asignar';
+  krChartMap[key] = (krChartMap[key] || 0) + 1;
 });
 
-new Chart(document.getElementById('chartObjective'), {
+new Chart(document.getElementById('chartKR'), {
   type: 'bar',
   data: {
-    labels: Object.keys(objMap),
+    labels: Object.keys(krChartMap),
     datasets: [{
       label: 'DELYs',
-      data: Object.values(objMap),
-      backgroundColor: Object.keys(objMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length] + 'bb'),
-      borderColor:     Object.keys(objMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length]),
+      data: Object.values(krChartMap),
+      backgroundColor: Object.keys(krChartMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length] + 'bb'),
+      borderColor:     Object.keys(krChartMap).map((_, i) => OBJ_COLORS[i % OBJ_COLORS.length]),
       borderWidth: 1.5,
       borderRadius: 6,
     }]
@@ -1066,31 +1058,6 @@ new Chart(document.getElementById('chartObjective'), {
   }
 });
 
-/* ──────────────────────────────────────────────────────
-   KR PROGRESS BARS
-────────────────────────────────────────────────────── */
-const krMap = {};
-delys.forEach(d => {
-  const key = d.krFull || 'Sin asignar';
-  krMap[key] = (krMap[key] || 0) + 1;
-});
-
-const maxKR = Math.max(...Object.values(krMap));
-const barsEl = document.getElementById('kr-bars');
-Object.entries(krMap)
-  .sort((a, b) => b[1] - a[1])
-  .forEach(([label, count], i) => {
-    const pct = (count / maxKR * 100).toFixed(0);
-    const color = OBJ_COLORS[i % OBJ_COLORS.length];
-    barsEl.innerHTML += `
-      <div class="prog-bar-wrap">
-        <div class="prog-bar-label" title="${label}">${label}</div>
-        <div class="prog-bar-track">
-          <div class="prog-bar-fill" style="width:${pct}%;background:${color}"></div>
-        </div>
-        <div class="prog-bar-count">${count}</div>
-      </div>`;
-  });
 
 /* ──────────────────────────────────────────────────────
    OKR IMPACT ANALYSIS
